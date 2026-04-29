@@ -10,7 +10,7 @@ on:
 
       display_name:
         description: "App Name (Optional)"
-        default: "YouTube"
+        default: "KiraTuno"
         required: true
         type: string
 
@@ -279,6 +279,8 @@ jobs:
       - name: Clone iSponsorBlock
         run: git clone --quiet --depth=1 https://github.com/Galactic-Dev/iSponsorBlock
     
+      - name: Clone YTAnotherMiniplayer
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTAnotherMiniplayer.git
 
       - name: Clone VolumeBoostYT
         if: ${{ inputs.volboost }}
@@ -438,6 +440,12 @@ jobs:
           cd VolumeBoostYT
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/volboostyt.deb
+
+      - name: Build YTAnotherMiniplayer
+        run: |
+          cd YTAnotherMiniplayer
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          mv packages/*.deb ${{ github.workspace }}/ytanmp.deb
           
       - name: Inject Tweaks Into IPA
         run: |
