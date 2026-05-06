@@ -1,4 +1,4 @@
-name: Build IPA with tweaks
+name: Build IPA with tweaks (TEST + SPONSORBLOCK)
 on:
   workflow_dispatch:
     inputs:
