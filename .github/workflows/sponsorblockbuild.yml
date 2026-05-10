@@ -99,7 +99,7 @@ on:
         type: boolean
 
       gonerino:
-        description: "Integrate Gonerino"
+        description: "Integrate YTIcons"
         default: true
         required: false
         type: boolean
@@ -264,6 +264,9 @@ jobs:
         if: ${{ inputs.ytweaks }}
         run: git clone --quiet --depth=1 https://github.com/fosterbarnes/YTweaks.git
 
+      - name: Clone YTIcons
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTIcons.git
+
       - name: Clone Gonerino
         if: ${{ inputs.gonerino }}
         run: git clone --quiet --depth=1 https://github.com/castdrian/Gonerino.git
@@ -272,9 +275,9 @@ jobs:
         if: ${{ inputs.getcap }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouGetCaption.git
 
-      - name: Clone youtube-native-share
+      - name: Clone YTHoldForSpeed
         if: ${{ inputs.ytshare }}
-        run: git clone --quiet --depth=1 https://github.com/jkhsjdhjs/youtube-native-share.git
+        run: git clone --quiet --depth=1 https://github.com/joshuaseltzer/YTHoldForSpeed
         
       - name: Clone iSponsorBlock
         run: git clone --quiet --depth=1 https://github.com/Galactic-Dev/iSponsorBlock
@@ -412,6 +415,12 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ytweaks.deb
           
+      - name: Build YTIcons
+        run: |
+          cd YTIcons
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          mv packages/*.deb ${{ github.workspace }}/yticons.deb
+
       - name: Build Gonerino
         if: ${{ inputs.gonerino }}
         run: |
@@ -426,13 +435,12 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ygc.deb
 
-      - name: Build youtube-native-share
+      - name: Build YTHoldForSpeed
         if: ${{ inputs.ytshare }}
         run: |
-          cd youtube-native-share
-          git clone --quiet --depth=1 https://github.com/protocolbuffers/protobuf.git
+          cd YTHoldForSpeed
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
-          mv packages/*.deb ${{ github.workspace }}/ytnativeshare.deb
+          mv packages/*.deb ${{ github.workspace }}/ytholdforspeed.deb
 
       - name: Build VolumeBoostYT
         if: ${{ inputs.volboost }}
