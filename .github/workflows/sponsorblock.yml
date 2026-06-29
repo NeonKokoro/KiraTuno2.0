@@ -145,10 +145,24 @@ jobs:
         with:
           exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,abconfig,youquality,youspeed,youmute,youloop,ytweaks,youslider,ytholdspeed,youchoose,youshare,gonerino,getcap,demc,ytshare,volboost
           
-      - name: Download and Validate IPA
+      - name: Install MEGA downloader
+        if: ${{ startsWith(inputs.ipa_url, 'https://mega.nz/') }}
+        run: brew install megatools
+      - name: Download IPA from Mega share link
+        if: ${{ startsWith(inputs.ipa_url, 'https://mega.nz/') }}
+        env:
+          IPA_URL: ${{ inputs.ipa_url }}
         run: |
-          wget "${{ inputs.ipa_url }}" --quiet --no-verbose -O youtube.ipa
+          megadl --no-progress --path youtube.ipa "$IPA_URL"
+      - name: Download IPA from direct URL
+        if: ${{ !startsWith(inputs.ipa_url, 'https://mega.nz/') }}
+        env:
+          IPA_URL: ${{ inputs.ipa_url }}
+        run: |
+          wget "$IPA_URL" --quiet --no-verbose -O youtube.ipa
 
+      - name: Validate IPA
+        run: |
           file_type=$(file --mime-type -b youtube.ipa)
 
           if [[ "$file_type" != "application/x-ios-app" && "$file_type" != "application/zip" ]]; then
@@ -178,7 +192,6 @@ jobs:
           }
           echo "THEOS_COMMIT=$(get_commit_hash "https://github.com/theos/theos")" >> $GITHUB_ENV
           echo "OPENYT_COMMIT=$(get_commit_hash "https://github.com/BillyCurtis/OpenYouTubeSafariExtension")" >> $GITHUB_ENV
-          echo "ALDERIS_COMMIT=$(get_commit_hash "https://github.com/hbang/Alderis")" >> $GITHUB_ENV
 
       - name: Cache Theos
         id: cache-theos
@@ -249,9 +262,6 @@ jobs:
       - name: Clone YTUHD
         if: ${{ inputs.ytuhd }}
         run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
-
-      - name: Clone iSponsorBlock
-        run: git clone https://github.com/Galactic-Dev/iSponsorBlock.git 
            
       - name: Clone Return-YouTube-Dislikes
         if: ${{ inputs.ryd }}
@@ -290,19 +300,9 @@ jobs:
 
       - name: Clone YouSlider
         if: ${{ inputs.youslider }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouSlider.git
-
-      - name: Cache Alderis
-        id: cache-alderis
-        if: ${{ inputs.youslider }}
-        uses: actions/cache@v5
-        with:
-          path: Alderis
-          key: Alderis-${{ env.ALDERIS_COMMIT }}
-
-      - name: Clone Alderis
-        if: ${{ inputs.youslider && steps.cache-alderis.outputs.cache-hit != 'true' }}
-        run: git clone --quiet --depth=1 https://github.com/hbang/Alderis.git
+        run: |
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouSlider.git
+          wget --no-verbose --quiet https://github.com/Tonwalter888/Tonwalter888.github.io/raw/refs/heads/main/deb/alderis.deb
 
       - name: Clone YTHoldForSpeed
         if: ${{ inputs.ytholdspeed }}
@@ -336,27 +336,19 @@ jobs:
         if: ${{ inputs.volboost }}
         run: git clone --quiet --depth=1 https://github.com/VasirakCalgux/VolumeBoostYT.git
 
-     # - name: Clone and build YTPlaybackFix
-      #  run: |
-       #     git clone --quiet --depth=1 https://github.com/Mark02-2012/YTPlaybackFix
-        #    cd YTPlaybackFix && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-         #   mv packages/*.deb ${{ github.workspace }}/ytplaybackfix.deb
-      
-      
-   
+
+      - name: Clone and build YTPlaybackFix
+        run: |
+            git clone --quiet --depth=1 https://github.com/Mark02-2012/YTPlaybackFix
+            cd YTPlaybackFix && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+            mv packages/*.deb ${{ github.workspace }}/ytplaybackfix.deb
+
       - name: Build YouMod
         run: |
           cd YouMod
           echo "YOUMOD_VERSION=$(grep '^Version:' control | cut -d ' ' -f2)" >> $GITHUB_ENV
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youmod.deb
-
-      -  name: Build iSponsorBlock
-         run: |
-          cd iSponsorBlock
-          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:latest:13.0
-          mv packages/*.deb ${{ github.workspace }}/isponsorblock.deb
-
         
       - name: Build YouPiP
         if: ${{ inputs.youpip }}
@@ -441,13 +433,6 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youslider.deb
 
-      - name: Build Alderis
-        if: ${{ inputs.youslider }}
-        run: |
-          cd Alderis
-          make clean package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64
-          mv packages/*.deb ${{ github.workspace }}/alderis.deb
-
       - name: Build YTHoldForSpeed
         if: ${{ inputs.ytholdspeed }}
         run: |
@@ -519,7 +504,7 @@ jobs:
       - name: Create a Draft Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: youmod-ipa-isponsorblock${{ github.run_number }}
+          tag_name: youmod-ipa${{ github.run_number }}
           name: YouMod_${{ env.YT_VERSION }}_v${{ env.YOUMOD_VERSION }} (${{ github.run_number }}) 
           files: YouMod_${{ env.YT_VERSION }}_v${{ env.YOUMOD_VERSION }}.ipa
           draft: true
