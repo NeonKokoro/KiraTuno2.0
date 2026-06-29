@@ -336,11 +336,15 @@ jobs:
         if: ${{ inputs.volboost }}
         run: git clone --quiet --depth=1 https://github.com/VasirakCalgux/VolumeBoostYT.git
 
-      - name: Clone and build YTPlaybackFix
-        run: |
-            git clone --quiet --depth=1 https://github.com/Mark02-2012/YTPlaybackFix
-            cd YTPlaybackFix && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-            mv packages/*.deb ${{ github.workspace }}/ytplaybackfix.deb
+      #- name: Clone and build YTPlaybackFix
+        #run: |
+          #  git clone --quiet --depth=1 https://github.com/Mark02-2012/YTPlaybackFix
+          #  cd YTPlaybackFix && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+           # mv packages/*.deb ${{ github.workspace }}/ytplaybackfix.deb
+      
+      
+      - name: Get YTPlaybackFix .deb
+       run: wget https://github.com/Mark02-2012/YTPlaybackFix/releases/download/v0.2/com.mark02-2012.ytplaybackfix_0.2_iphoneos-arm64.deb
            
 
       - name: Build YouMod
