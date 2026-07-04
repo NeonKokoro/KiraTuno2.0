@@ -127,7 +127,7 @@ on:
         type: boolean
 
       ytshare:
-        description: "Integrate youtube-native-share"
+        description: "Integrate YTAnotherMiniplayer"
         default: true
         required: false
         type: boolean
@@ -342,9 +342,9 @@ jobs:
         if: ${{ inputs.getcap }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouGetCaption.git
 
-      - name: Clone youtube-native-share
+      - name: Clone YTAnotherMiniplayer
         if: ${{ inputs.ytshare }}
-        run: git clone --quiet --depth=1 https://github.com/jkhsjdhjs/youtube-native-share.git
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTAnotherMiniplayer.git
 
       - name: Clone VolumeBoostYT
         if: ${{ inputs.volboost }}
@@ -483,13 +483,13 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ygc.deb
 
-      - name: Build youtube-native-share
+      - name: Build YTAnotherMiniplayer
         if: ${{ inputs.ytshare }}
         run: |
-          cd youtube-native-share
+          cd YTAnotherMiniplayer
           git clone --quiet --depth=1 https://github.com/protocolbuffers/protobuf.git
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
-          mv packages/*.deb ${{ github.workspace }}/ytnativeshare.deb
+          mv packages/*.deb ${{ github.workspace }}/ytanotherminiplayer.deb
 
       - name: Build VolumeBoostYT
         if: ${{ inputs.volboost }}
