@@ -133,7 +133,7 @@ on:
         type: boolean
 
       volboost:
-        description: "Integrate VolumeBoostYT (Require iOS 16+)"
+        description: "Integrate FLEXHelperForYT (recommended)"
         default: true
         required: false
         type: boolean
@@ -346,9 +346,9 @@ jobs:
         if: ${{ inputs.ytshare }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTAnotherMiniplayer.git
 
-      - name: Clone VolumeBoostYT
+      - name: Clone FLEXHelperForYT
         if: ${{ inputs.volboost }}
-        run: git clone --quiet --depth=1 https://github.com/VasirakCalgux/VolumeBoostYT.git
+        run: git clone --quiet --depth=1 https://github.com/Tonwalter888/FLEXHelperForYT.git
 
       - name: Build YouMod
         run: |
@@ -491,12 +491,12 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/ytanotherminiplayer.deb
 
-      - name: Build VolumeBoostYT
+      - name: Build FLEXHelperForYT
         if: ${{ inputs.volboost }}
         run: |
-          cd VolumeBoostYT
+          cd FLEXHelperForYT
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
-          mv packages/*.deb ${{ github.workspace }}/volboostyt.deb
+          mv packages/*.deb ${{ github.workspace }}/flexhelperforyt.deb
           
       - name: Inject Tweaks Into IPA
         run: |
