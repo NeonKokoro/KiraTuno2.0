@@ -10,7 +10,7 @@ on:
       branch:
         description: 'Branch to build from'
         required: true
-        default: 'main'
+        default: 'pre-release'
 
       ipa_url:
         description: "URL to the decrypted IPA file"
@@ -20,7 +20,7 @@ on:
 
       display_name:
         description: "App Name (Optional)"
-        default: "YouTube"
+        default: "KiraTuno"
         required: true
         type: string
 
@@ -253,6 +253,9 @@ jobs:
       - name: Clone UncappedAVPlayer
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/UncappedAVPlayer.git
 
+      - name: Clone YTAnotherMiniplayer
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTAnotherMiniplayer.git
+
       - name: Clone DontEatMyContent
         if: ${{ inputs.demc }}
         run: git clone --quiet --depth=1 https://github.com/therealFoxster/DontEatMyContent.git
@@ -338,6 +341,12 @@ jobs:
           cd UncappedAVPlayer
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/uncapavplayer.deb
+
+      - name: Build YTAnotherMiniplayer
+        run: |
+          cd YTAnotherMiniplayer
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
+          mv packages/*.deb ${{ github.workspace }}/ytanotherminiplayer.deb
 
       - name: Build DontEatMyContent
         if: ${{ inputs.demc }}
